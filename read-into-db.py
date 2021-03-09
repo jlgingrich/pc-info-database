@@ -1,6 +1,7 @@
 import mysql
 import mysql.connector
 import csv
+import sys
 
 # Utility for loading CSV files into a MySQL server
 
@@ -39,12 +40,18 @@ def load_csv(cur, file, table):
 # SCRIPT
 
 # Open connection to server
-conn = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "testSQLpass250" )
+
+try:
+    from connection import conn
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Incorrect credentials for attempted database connection.")
+    else:
+        print(err)
+    sys.exit()
 cur = conn.cursor()
-cur.execute("USE pc_information")
+cur.execute("CREATE SCHEMA `pc_information`;")
+cur.execute("USE pc_information;")
 
 # Create database tables
 cur.execute("""CREATE TABLE IF NOT EXISTS Product (
